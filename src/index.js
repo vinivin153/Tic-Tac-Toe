@@ -1,17 +1,24 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
 
+function Square({ idx }) {
+  return <button className="square">{idx}</button>;
+}
+
+function Board() {
+  const render = () => {
+    const board = [];
+
+    for (let idx = 0; idx < 9; idx++) {
+      board.push(<Square idx={idx} />);
+    }
+
+    return board;
+  };
+
+  return <div className="board">{render()}</div>;
+}
+
+// rendering
 const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+root.render(<Board />);
