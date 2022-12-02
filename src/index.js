@@ -34,19 +34,29 @@ function Board({ squares, onClickHandler }) {
 
   return <div className="board">{render()}</div>;
 }
-
 function TicTacToeGame() {
   const [squares, setSquares] = useState(Array(9).fill(null));
+  const [nextPlayer, setNextPlayer] = useState('X');
+
+  const changeNextPlayer = () => {
+    setNextPlayer((nextPlayer) => {
+      return nextPlayer === 'X' ? 'O' : 'X';
+    });
+  };
 
   const onClickHandler = (idx) => {
     const newSquares = [...squares];
 
-    newSquares[idx] = idx;
+    if (newSquares[idx]) return;
+
+    newSquares[idx] = nextPlayer;
     setSquares(newSquares);
+    changeNextPlayer();
   };
 
   return (
     <div>
+      <div className="next-player">Next Player: {nextPlayer}</div>
       <Board squares={squares} onClickHandler={onClickHandler} />
     </div>
   );
