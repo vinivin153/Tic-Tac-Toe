@@ -1,5 +1,6 @@
-import { React, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import ReactDOM from 'react-dom/client';
+import './index.css';
 
 function Square({ value, idx, onClickHandler }) {
   return (
@@ -34,9 +35,12 @@ function Board({ squares, onClickHandler }) {
 
   return <div className="board">{render()}</div>;
 }
+
 function TicTacToeGame() {
   const [squares, setSquares] = useState(Array(9).fill(null));
+  const [history, setHistory] = useState([squares]);
   const [nextPlayer, setNextPlayer] = useState('X');
+  const currentIdx = useRef(history.length - 1);
 
   const changeNextPlayer = () => {
     setNextPlayer((nextPlayer) => {
@@ -45,20 +49,43 @@ function TicTacToeGame() {
   };
 
   const onClickHandler = (idx) => {
-    const newSquares = [...squares];
+    const newSquares = [...history[currentIdx.current]];
 
     if (newSquares[idx]) return;
 
     newSquares[idx] = nextPlayer;
     setSquares(newSquares);
+    setHistory([...history, newSquares]);
+    currentIdx.current += 1;
     changeNextPlayer();
   };
 
+  const undoHandler = () => {
+    changeNextPlayer();
+    currentIdx.current -= 1;
+    setHistory((history) => {
+      const newHistory = [...history];
+      newHistory.pop();
+
+      return newHistory;
+    });
+  };
+
   return (
-    <div>
-      <div className="next-player">Next Player: {nextPlayer}</div>
-      <Board squares={squares} onClickHandler={onClickHandler} />
-    </div>
+    <>
+      <div>
+        <div className="next-player">Next Player: {nextPlayer}</div>
+        <Board
+          squares={history[currentIdx.current]}
+          onClickHandler={onClickHandler}
+        />
+      </div>
+      <div>
+        <button className="undo" onClick={undoHandler}>
+          Undo
+        </button>
+      </div>
+    </>
   );
 }
 
