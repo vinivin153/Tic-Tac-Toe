@@ -71,6 +71,29 @@ function TicTacToeGame() {
     });
   };
 
+  const isWinner = (squares) => {
+    const rows = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6],
+    ];
+
+    for (let row of rows) {
+      if (
+        squares[row[0]] === squares[row[1]] &&
+        squares[row[1]] === squares[row[2]]
+      )
+        return true;
+    }
+
+    return false;
+  };
+
   return (
     <>
       <div>
