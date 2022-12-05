@@ -2,10 +2,10 @@ import React, { useRef, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 
-function Square({ value, idx, onClickHandler }) {
+function Square({ value, idx, onClickHandler, highlight }) {
   return (
     <button
-      className="square"
+      className={`square${highlight}`}
       onClick={() => {
         onClickHandler(idx);
       }}
@@ -15,10 +15,11 @@ function Square({ value, idx, onClickHandler }) {
   );
 }
 
-function Board({ squares, onClickHandler }) {
+function Board({ squares, onClickHandler, winnerRow }) {
   const render = () => {
     const board = [];
-
+    const winnerRowSet = new Set(winnerRow);
+    console.log(winnerRowSet);
     for (let idx = 0; idx < 9; idx++) {
       board.push(
         <Square
@@ -26,6 +27,7 @@ function Board({ squares, onClickHandler }) {
           idx={idx}
           value={squares[idx]}
           onClickHandler={onClickHandler}
+          highlight={winnerRowSet.has(idx) ? ' highlight' : ''}
         />
       );
     }
@@ -40,6 +42,7 @@ function TicTacToeGame() {
   const [squares, setSquares] = useState(Array(9).fill(null));
   const [history, setHistory] = useState([squares]);
   const [nextPlayer, setNextPlayer] = useState('X');
+  const [winnerRow, setWinnerRow] = useState([]);
   const currentIdx = useRef(history.length - 1);
 
   const changeNextPlayer = () => {
@@ -57,7 +60,20 @@ function TicTacToeGame() {
     setSquares(newSquares);
     setHistory([...history, newSquares]);
     currentIdx.current += 1;
-    changeNextPlayer();
+
+    const winnerRow = getWinnerRow(newSquares);
+    setWinnerRow(winnerRow);
+
+    if (isRowEmpty(winnerRow)) {
+      changeNextPlayer();
+      return;
+    }
+
+    // 팝업
+  };
+
+  const isRowEmpty = (winnerRow) => {
+    return winnerRow.length === 0;
   };
 
   const undoHandler = () => {
@@ -71,7 +87,7 @@ function TicTacToeGame() {
     });
   };
 
-  const isWinner = (squares) => {
+  const getWinnerRow = (squares) => {
     const rows = [
       [0, 1, 2],
       [3, 4, 5],
@@ -89,11 +105,10 @@ function TicTacToeGame() {
         squares[row[0]] === squares[row[1]] &&
         squares[row[1]] === squares[row[2]]
       ) {
-        return true;
+        return row;
       }
     }
-
-    return false;
+    return [];
   };
 
   return (
@@ -103,6 +118,7 @@ function TicTacToeGame() {
         <Board
           squares={history[currentIdx.current]}
           onClickHandler={onClickHandler}
+          winnerRow={winnerRow}
         />
       </div>
       <div>
@@ -115,5 +131,7 @@ function TicTacToeGame() {
 }
 
 // rendering
-const root = ReactDOM.createRoot(document.getElementById('tictactoe-game'));
-root.render(<TicTacToeGame />);
+const tictactoeGame = ReactDOM.createRoot(
+  document.getElementById('tictactoe-game')
+);
+tictactoeGame.render(<TicTacToeGame />);
