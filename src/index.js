@@ -85,10 +85,12 @@ function TicTacToeGame() {
 
     for (let row of rows) {
       if (
+        squares[row[0]] !== null &&
         squares[row[0]] === squares[row[1]] &&
         squares[row[1]] === squares[row[2]]
-      )
+      ) {
         return true;
+      }
     }
 
     return false;
@@ -113,5 +115,5 @@ function TicTacToeGame() {
 }
 
 // rendering
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById('tictactoe-game'));
 root.render(<TicTacToeGame />);
