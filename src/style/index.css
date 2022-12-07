@@ -1,3 +1,8 @@
+#tictactoe-game{
+    position: relative;
+    width: fit-content
+}
+
 .board{
     display: grid;
     width:fit-content;
