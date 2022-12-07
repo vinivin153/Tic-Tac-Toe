@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import Modal from './Modal';
 import Board from './Board';
 
@@ -8,8 +8,7 @@ export default function TicTacToeGame() {
   const [nextPlayer, setNextPlayer] = useState('X');
   const [winnerRow, setWinnerRow] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const currentIdx = useRef(history.length - 1);
-
+  const currentIdx = useRef(0);
   const changeNextPlayer = () => {
     setNextPlayer((nextPlayer) => {
       return nextPlayer === 'X' ? 'O' : 'X';
@@ -76,6 +75,21 @@ export default function TicTacToeGame() {
     return [];
   };
 
+  const initGame = () => {
+    const newSquares = Array(9).fill(null);
+    setSquares(newSquares);
+    setHistory([newSquares]);
+    setNextPlayer('X');
+    setWinnerRow([]);
+    setShowModal(false);
+    currentIdx.current = 0;
+  };
+
+  const regameHandler = () => {
+    setShowModal(false);
+    initGame();
+  };
+
   return (
     <>
       <div className="next-player">Next Player: {nextPlayer}</div>
@@ -87,7 +101,9 @@ export default function TicTacToeGame() {
       <button className="undo" onClick={undoHandler}>
         Undo
       </button>
-      <Modal showModal={showModal} winner={nextPlayer} />
+      {showModal ? (
+        <Modal winner={nextPlayer} regameHandler={regameHandler} />
+      ) : null}
     </>
   );
 }
