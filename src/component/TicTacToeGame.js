@@ -41,6 +41,11 @@ export default function TicTacToeGame() {
   };
 
   const undoHandler = () => {
+    if (!currentIdx.current) {
+      alert("You can't click undo button anymore.");
+      return;
+    }
+
     changeNextPlayer();
     currentIdx.current -= 1;
     setHistory((history) => {
