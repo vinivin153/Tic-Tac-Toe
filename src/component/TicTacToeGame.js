@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import Modal from './Modal';
+import ModalPortal from './ModalPortal';
 import Board from './Board';
 
 export default function TicTacToeGame() {
@@ -90,8 +91,12 @@ export default function TicTacToeGame() {
     currentIdx.current = 0;
   };
 
-  const regameHandler = () => {
+  const closeHandler = () => {
     setShowModal(false);
+  };
+
+  const regameHandler = () => {
+    closeHandler();
     initGame();
   };
 
@@ -107,7 +112,13 @@ export default function TicTacToeGame() {
         Undo
       </button>
       {showModal ? (
-        <Modal winner={nextPlayer} regameHandler={regameHandler} />
+        <ModalPortal>
+          <Modal
+            winner={nextPlayer}
+            regameHandler={regameHandler}
+            closeHandler={closeHandler}
+          />
+        </ModalPortal>
       ) : null}
     </>
   );
