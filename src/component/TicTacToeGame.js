@@ -1,18 +1,16 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import Modal from './Modal';
 import ModalPortal from './ModalPortal';
 import Board from './Board';
 
 export default function TicTacToeGame() {
-  const [squares, setSquares] = useState(Array(9).fill(null));
-  const [history, setHistory] = useState([squares]);
+  const [history, setHistory] = useState([Array(9).fill(null)]);
   const [nextPlayer, setNextPlayer] = useState('X');
   const [result, setResult] = useState({
     winner: null,
     winnerRow: [],
   });
   const [showModal, setShowModal] = useState(false);
-  const currentIdx = useRef(0);
 
   const changeNextPlayer = () => {
     setNextPlayer((nextPlayer) => {
@@ -21,14 +19,12 @@ export default function TicTacToeGame() {
   };
 
   const onClickHandler = (idx) => {
-    const newSquares = [...history[currentIdx.current]];
+    const newSquares = [...history[history.length - 1]];
 
     if (newSquares[idx]) return;
 
     newSquares[idx] = nextPlayer;
-    setSquares(newSquares);
     setHistory([...history, newSquares]);
-    currentIdx.current += 1;
 
     if (isComeOutResult(newSquares) === false) {
       changeNextPlayer();
@@ -39,13 +35,12 @@ export default function TicTacToeGame() {
   };
 
   const undoHandler = () => {
-    if (!currentIdx.current) {
+    if (history.length <= 1) {
       alert("You can't click undo button anymore.");
       return;
     }
 
     changeNextPlayer();
-    currentIdx.current -= 1;
     setHistory((history) => {
       const newHistory = [...history];
       newHistory.pop();
@@ -95,12 +90,10 @@ export default function TicTacToeGame() {
 
   const initGame = () => {
     const newSquares = Array(9).fill(null);
-    setSquares(newSquares);
     setHistory([newSquares]);
     setNextPlayer('X');
     setResult({ result: false, winner: null, winnerRow: [] });
     setShowModal(false);
-    currentIdx.current = 0;
   };
 
   const closeHandler = () => {
@@ -116,7 +109,7 @@ export default function TicTacToeGame() {
     <>
       <div className="next-player">Next Player: {nextPlayer}</div>
       <Board
-        squares={history[currentIdx.current]}
+        squares={history[history.length - 1]}
         onClickHandler={onClickHandler}
         winnerRow={result.winnerRow}
       />
