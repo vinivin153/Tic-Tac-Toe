@@ -7,9 +7,13 @@ export default function TicTacToeGame() {
   const [squares, setSquares] = useState(Array(9).fill(null));
   const [history, setHistory] = useState([squares]);
   const [nextPlayer, setNextPlayer] = useState('X');
-  const [winnerRow, setWinnerRow] = useState([]);
+  const [result, setResult] = useState({
+    winner: null,
+    winnerRow: [],
+  });
   const [showModal, setShowModal] = useState(false);
   const currentIdx = useRef(0);
+
   const changeNextPlayer = () => {
     setNextPlayer((nextPlayer) => {
       return nextPlayer === 'X' ? 'O' : 'X';
@@ -26,19 +30,12 @@ export default function TicTacToeGame() {
     setHistory([...history, newSquares]);
     currentIdx.current += 1;
 
-    const winnerRow = getWinnerRow(newSquares);
-    setWinnerRow(winnerRow);
-
-    if (isRowEmpty(winnerRow)) {
+    if (isComeOutResult(newSquares) === false) {
       changeNextPlayer();
       return;
     }
 
     setShowModal(true);
-  };
-
-  const isRowEmpty = (winnerRow) => {
-    return winnerRow.length === 0;
   };
 
   const undoHandler = () => {
@@ -57,7 +54,7 @@ export default function TicTacToeGame() {
     });
   };
 
-  const getWinnerRow = (squares) => {
+  const isWin = (squares) => {
     const rows = [
       [0, 1, 2],
       [3, 4, 5],
@@ -75,10 +72,25 @@ export default function TicTacToeGame() {
         squares[row[0]] === squares[row[1]] &&
         squares[row[1]] === squares[row[2]]
       ) {
-        return row;
+        setResult({ winner: nextPlayer, winnerRow: row });
+        return true;
       }
     }
-    return [];
+    return false;
+  };
+
+  const isDraw = (squares) => {
+    for (let idx = 0; idx < 9; idx++) {
+      if (squares[idx] === null) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  const isComeOutResult = (squares) => {
+    return isWin(squares) || isDraw(squares);
   };
 
   const initGame = () => {
@@ -86,7 +98,7 @@ export default function TicTacToeGame() {
     setSquares(newSquares);
     setHistory([newSquares]);
     setNextPlayer('X');
-    setWinnerRow([]);
+    setResult({ result: false, winner: null, winnerRow: [] });
     setShowModal(false);
     currentIdx.current = 0;
   };
@@ -106,7 +118,7 @@ export default function TicTacToeGame() {
       <Board
         squares={history[currentIdx.current]}
         onClickHandler={onClickHandler}
-        winnerRow={winnerRow}
+        winnerRow={result.winnerRow}
       />
       <button className="undo" onClick={undoHandler}>
         Undo
@@ -114,7 +126,7 @@ export default function TicTacToeGame() {
       {showModal ? (
         <ModalPortal>
           <Modal
-            winner={nextPlayer}
+            winner={result.winner}
             regameHandler={regameHandler}
             closeHandler={closeHandler}
           />

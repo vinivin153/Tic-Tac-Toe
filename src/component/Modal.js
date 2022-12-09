@@ -8,7 +8,9 @@ export default function Modal({ winner, regameHandler, closeHandler }) {
           </button>
         </header>
         <section>
-          <div className="winner">{winner}의 승리!</div>
+          <div className="winner">
+            {winner ? ` ${winner}의 승리!` : '무승부!'}
+          </div>
         </section>
         <footer>
           <button className="btn-regame" onClick={regameHandler}>
